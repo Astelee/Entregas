@@ -1,56 +1,124 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Entregas</title>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nossa Pizza</title>
 <style>
+:root{--bg:#0B0F0D;--card:#161C19;--tx:#F2F5F3;--mu:#8A968F;--pr:#16A34A;--prt:#fff;--ok:#16A34A;--bd:#232B27;--sel:#12301f;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--bg:#0B0F0D;--card:#161C19;--bd:#232B27;--tx:#F2F5F3;--mu:#8A968F;--g:#16A34A;--g2:#22C55E}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,Roboto,sans-serif}
-#app{padding:18px 16px 96px;max-width:520px;margin:0 auto}
-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-.logo{width:48px;height:48px;border-radius:14px;background:var(--card);display:grid;place-items:center;font-size:28px}
-header b{font-size:20px;display:block}header span{color:var(--mu);font-size:13px}
-.cta{width:100%;border:0;border-radius:18px;padding:22px;background:linear-gradient(135deg,var(--g),var(--g2));color:#fff;font:700 21px system-ui;display:flex;justify-content:space-between;align-items:center}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px}
-.card small{color:var(--mu);font-size:12px;display:block}.card b{font-size:22px}
-h2{font-size:17px;margin:20px 0 10px}
-.empty{color:var(--mu);text-align:center;padding:22px 10px}
-nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:#121715;border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0)}
-nav button{flex:1;background:none;border:0;color:var(--mu);font:12px system-ui;padding:10px 0;min-height:60px}
-nav button i{display:block;font-style:normal;font-size:22px}nav button.on{color:var(--g2);font-weight:700}
-#t{position:fixed;left:50%;bottom:82px;transform:translateX(-50%);background:var(--card);border:1px solid var(--bd);padding:10px 16px;border-radius:20px;display:none;font-size:14px}
-</style></head><body>
-<div id="app">
-<header><div class="logo">🍕</div><div><b>Pizzaria</b><span>Controle de entregas</span></div></header>
-<button class="cta" onclick="soon()"><span>Registrar Entrega</span><span>›</span></button>
-<div class="grid">
-<div class="card"><small>Entregas hoje</small><b id="n">0</b></div>
-<div class="card"><small>Total das taxas</small><b id="t$">R$ 0,00</b></div>
-<div class="card"><small>Entregadores</small><b id="c">0</b></div>
-<div class="card"><small>Expediente</small><b id="d" style="font-size:18px"></b></div>
-</div>
-<h2>Resumo por entregador</h2>
-<div class="card" id="list"></div>
-</div>
-<nav>
-<button class="on"><i>🏠</i>Início</button>
-<button onclick="soon()"><i>🧾</i>Histórico</button>
-<button onclick="soon()"><i>📋</i>Fechamento</button>
-<button onclick="soon()"><i>☰</i>Mais</button>
-</nav>
-<div id="t"></div>
+html,body{margin:0}body{background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:84px}
+#app{max-width:520px;margin:0 auto;padding:14px}
+h1{font-size:20px;margin:4px 0 12px}h2{font-size:16px;margin:16px 0 8px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+.grid{display:grid;gap:10px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}
+.st b{display:block;font-size:20px}.st span{color:var(--mu);font-size:12px}
+button{font:inherit;border:0;border-radius:12px;padding:12px;background:var(--card);color:var(--tx);border:1px solid var(--bd);cursor:pointer;min-height:48px}
+button.p{background:var(--pr);color:var(--prt);border-color:var(--pr);font-weight:700}
+button.big{min-height:84px;font-size:22px;width:100%}
+button.ok{background:var(--ok);color:#fff;border-color:var(--ok);font-weight:700;min-height:60px;font-size:18px;width:100%}
+button.sel{background:var(--sel);border:2px solid var(--pr);font-weight:700}
+button.c{min-height:72px;font-size:17px}button.c small{display:block;color:var(--mu);font-weight:400}
+button.sm{min-height:36px;padding:6px 10px;font-size:14px}
+input,select{font:inherit;width:100%;padding:12px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);min-height:48px}
+input.fee{font-size:30px;font-weight:700;text-align:center}
+label{display:block;font-size:13px;color:var(--mu);margin:10px 0 4px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd)}.row:last-child{border:0}
+.mu{color:var(--mu);font-size:13px}.tot{font-weight:700}.off{opacity:.5}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;border-radius:0;background:none;font-size:13px;min-height:58px}nav button.on{color:var(--pr);font-weight:700}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:90px;background:var(--ok);color:#fff;padding:12px 18px;border-radius:24px;display:none;z-index:9;font-weight:700}
+#modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:10;padding:20px}
+#modal div{background:var(--card);padding:18px;border-radius:14px;max-width:360px;width:100%}
+@media print{nav,.noprint,#toast{display:none!important}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<nav><button data-v="home" onclick="go('home')">Início</button><button data-v="hist" onclick="go('hist')">Histórico</button><button data-v="close" onclick="go('close')">Fechamento</button><button data-v="team" onclick="go('team')">Equipe</button></nav>
+<div id="toast"></div>
+<div id="modal"><div><p id="mq"></p><div class="grid g2"><button onclick="mc(0)">Cancelar</button><button class="p" onclick="mc(1)">Confirmar</button></div></div></div>
 <script>
-function soon(){var t=document.getElementById('t');t.textContent='Disponível na próxima etapa';t.style.display='block';setTimeout(function(){t.style.display='none'},1500)}
-var S;try{S=JSON.parse(localStorage.getItem('pizza_v2'))}catch(e){}
+const K='pizza_entregas_v1';
+let S;try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
 S=S&&S.deliveries?S:{couriers:[],shifts:[],deliveries:[]};
-var brl=function(c){return (c/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})};
-var sh=S.shifts.filter(function(s){return !s.close})[0];
-var ds=sh?S.deliveries.filter(function(d){return d.sid==sh.id}):[];
-var tot=ds.reduce(function(a,d){return a+d.fee},0);
-document.getElementById('n').textContent=ds.length;
-document.getElementById('t$').textContent=brl(tot);
-document.getElementById('c').textContent=S.couriers.filter(function(c){return c.active}).length;
-document.getElementById('d').textContent=new Date(sh?sh.open:Date.now()).toLocaleDateString('pt-BR');
-document.getElementById('list').innerHTML='<div class="empty">Nenhuma entrega registrada ainda.</div>';
-</script></body></html>
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast('Erro ao salvar!')}};
+const $=i=>document.getElementById(i),uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const brl=c=>(c/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const dt=t=>new Date(t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+const hm=t=>new Date(t).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cents=s=>{const n=parseFloat(String(s).replace(',','.'));return isNaN(n)?0:Math.round(n*100)};
+const cur=()=>S.shifts.find(s=>!s.close);
+const cou=id=>S.couriers.find(c=>c.id==id)||{name:'(removido)',ini:'?'};
+const PL={ifood:'iFood',anota:'Anota AI'};
+let V='home',P=null,F={order:'',fee:'',cid:null,plat:'ifood',edit:null},H={c:'',p:'',a:'',b:''},busy=false,mfn=null;
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',1400)}
+function ask(q,fn){$('mq').textContent=q;mfn=fn;$('modal').style.display='flex'}
+function mc(y){$('modal').style.display='none';if(y&&mfn)mfn()}
+function go(v,p){V=v;P=p||null;render();scrollTo(0,0)}
+function stats(ds){const by={};let n=0,t=0,i=0,a=0;ds.forEach(d=>{const b=by[d.cid]=by[d.cid]||{n:0,t:0,i:0,a:0};b.n++;b.t+=d.fee;n++;t+=d.fee;if(d.plat=='ifood'){b.i+=d.fee;i+=d.fee}else{b.a+=d.fee;a+=d.fee}});return{by,n,t,i,a}}
+const sd=sid=>S.deliveries.filter(d=>d.sid==sid);
+function reportHTML(sid){const s=stats(sd(sid));const ids=Object.keys(s.by);
+return (ids.length?ids.map(id=>{const b=s.by[id],c=cou(id);return `<div class="row"><div><b>${esc(c.name)}</b> <span class="mu">(${esc(c.ini)})</span><div class="mu">iFood ${brl(b.i)} · Anota AI ${brl(b.a)}</div></div><div style="text-align:right"><b>${brl(b.t)}</b><div class="mu">${b.n} entrega${b.n==1?'':'s'}</div></div></div>`}).join(''):'<p class="mu">Nenhuma entrega neste expediente.</p>')+
+`<div class="row tot"><span>TOTAL GERAL</span><span>${s.n} entregas · ${brl(s.t)}</span></div><div class="row"><span>iFood</span><span>${brl(s.i)}</span></div><div class="row"><span>Anota AI</span><span>${brl(s.a)}</span></div>`}
+function reportText(sid){const sh=S.shifts.find(x=>x.id==sid),s=stats(sd(sid));
+let t=`FECHAMENTO — ${dt(sh.open)}${sh.close?' a '+hm(sh.close):' (em aberto)'}\n\n`;
+Object.keys(s.by).forEach(id=>{const b=s.by[id],c=cou(id);t+=`${c.name.toUpperCase()} (${c.ini})\n${b.n} entregas — ${brl(b.t)}\n(iFood ${brl(b.i)} / Anota AI ${brl(b.a)})\n\n`});
+return t+`TOTAL GERAL\n${s.n} entregas — ${brl(s.t)}\niFood: ${brl(s.i)}\nAnota AI: ${brl(s.a)}`}
+async function share(sid){const t=reportText(sid);if(window.Android){Android.share(t);return}try{if(navigator.share){await navigator.share({text:t});return}}catch(e){if(e.name=='AbortError')return}
+try{await navigator.clipboard.writeText(t);toast('Copiado!')}catch(e){prompt('Copie o texto:',t)}}
+function openShift(){S.shifts.push({id:uid(),open:Date.now(),close:null});save();render();toast('Expediente aberto')}
+function closeShift(){const s=cur();ask('Encerrar o expediente? Os dados serão preservados e novas entregas iniciarão um novo expediente.',()=>{s.close=Date.now();save();go('rep',s.id)})}
+function pick(id){F.cid=id;render()}function plat(p){F.plat=p;render()}
+function newDel(){F={order:'',fee:'',cid:null,plat:F.plat,edit:null};go('reg')}
+function saveDel(){if(busy)return;const fee=cents(F.fee);
+if(fee<=0)return toast('Informe a taxa');if(!F.cid)return toast('Escolha o entregador');
+busy=true;setTimeout(()=>busy=false,600);
+if(F.edit){const d=S.deliveries.find(x=>x.id==F.edit);Object.assign(d,{order:F.order.trim(),fee,cid:F.cid,plat:F.plat});save();toast('Registro corrigido');F.edit=null;go('hist');return}
+const s=cur();if(!s)return toast('Abra um expediente');
+S.deliveries.push({id:uid(),sid:s.id,order:F.order.trim(),fee,cid:F.cid,plat:F.plat,ts:Date.now()});save();
+F.order='';F.fee='';F.cid=null;render();toast('✓ Entrega registrada');setTimeout(()=>{const f=$('fee');f&&f.focus()},50)}
+function editDel(id){const d=S.deliveries.find(x=>x.id==id);F={order:d.order,fee:(d.fee/100).toFixed(2).replace('.',','),cid:d.cid,plat:d.plat,edit:id};go('reg')}
+function delDel(id){ask('Excluir esta entrega?',()=>{S.deliveries=S.deliveries.filter(x=>x.id!=id);save();render();toast('Excluída')})}
+function addCou(){const n=$('cn').value.trim(),i=$('ci').value.trim().toUpperCase();if(!n||!i)return toast('Informe nome e iniciais');
+if(P){const c=S.couriers.find(x=>x.id==P);c.name=n;c.ini=i;P=null}else S.couriers.push({id:uid(),name:n,ini:i,active:true});save();render()}
+function togCou(id){const c=S.couriers.find(x=>x.id==id);c.active=!c.active;save();render()}
+function editCou(id){P=id;render();const c=cou(id);$('cn').value=c.name;$('ci').value=c.ini}
+const views={
+home(){const s=cur(),ds=s?sd(s.id):[],st=stats(ds),ac=S.couriers.filter(c=>c.active).length;
+if(!s)return `<h1>🍕 Nossa Pizza</h1><div class="card"><p>Nenhum expediente aberto.</p><button class="p big" onclick="openShift()">ABRIR EXPEDIENTE</button></div>${S.couriers.length?'':'<p class="mu">Comece cadastrando os entregadores na aba Equipe.</p>'}`;
+return `<h1>🍕 Nossa Pizza</h1><div class="mu" style="margin:-8px 0 10px">Expediente de ${new Date(s.open).toLocaleDateString('pt-BR')} · aberto às ${hm(s.open)}</div>
+<button class="p big" onclick="${ac?'newDel()':"go('team')"}">${ac?'REGISTRAR ENTREGA':'CADASTRAR ENTREGADORES'}</button>
+<div class="grid g3 card st" style="margin-top:12px"><div><b>${st.n}</b><span>entregas</span></div><div><b>${brl(st.t)}</b><span>em taxas</span></div><div><b>${ac}</b><span>entregadores</span></div></div>
+<div class="card"><b>Por entregador</b>${Object.keys(st.by).length?Object.keys(st.by).map(id=>`<div class="row"><span>${esc(cou(id).name)} <span class="mu">(${esc(cou(id).ini)})</span></span><span><b>${brl(st.by[id].t)}</b> <span class="mu">· ${st.by[id].n}</span></span></div>`).join(''):'<p class="mu">Sem entregas ainda.</p>'}</div>
+<div class="grid g2"><button onclick="go('hist')">Histórico</button><button onclick="go('close')">Fechamento</button></div>`},
+reg(){const s=cur();if(!s&&!F.edit)return views.home();
+const list=S.couriers.filter(c=>c.active||c.id==F.cid);
+return `<button class="sm" onclick="var h=F.edit;F.edit=null;go(h?'hist':'home')">← Voltar</button><h1 style="margin-top:10px">${F.edit?'Corrigir entrega':'Registrar entrega'}</h1>
+<label>Taxa de entrega (R$)</label><input id="fee" class="fee" inputmode="decimal" placeholder="0,00" value="${esc(F.fee)}" oninput="F.fee=this.value">
+<label>Plataforma</label><div class="grid g2"><button class="${F.plat=='ifood'?'sel':''}" onclick="plat('ifood')">iFood</button><button class="${F.plat=='anota'?'sel':''}" onclick="plat('anota')">Anota AI</button></div>
+<label>Entregador</label><div class="grid g2">${list.map(c=>`<button class="c ${F.cid==c.id?'sel':''}" onclick="pick('${c.id}')">${esc(c.name)}<small>${esc(c.ini)}</small></button>`).join('')||'<p class="mu">Cadastre entregadores na aba Equipe.</p>'}</div>
+<label>Nº do pedido (opcional)</label><input value="${esc(F.order)}" oninput="F.order=this.value">
+<p class="mu">${F.edit?'Data e hora originais mantidas.':'Data e hora: automáticas ao salvar.'}</p>
+<button class="ok" onclick="saveDel()">${F.edit?'SALVAR CORREÇÃO':'CONFIRMAR'}</button>`},
+hist(){let ds=S.deliveries.slice().sort((a,b)=>b.ts-a.ts);
+if(H.c)ds=ds.filter(d=>d.cid==H.c);if(H.p)ds=ds.filter(d=>d.plat==H.p);
+if(H.a)ds=ds.filter(d=>d.ts>=new Date(H.a+'T00:00:00').getTime());if(H.b)ds=ds.filter(d=>d.ts<=new Date(H.b+'T23:59:59').getTime());
+const st=stats(ds);
+return `<h1>Histórico</h1><div class="card noprint"><div class="grid g2"><select onchange="H.c=this.value;render()"><option value="">Todos entregadores</option>${S.couriers.map(c=>`<option value="${c.id}" ${H.c==c.id?'selected':''}>${esc(c.name)}</option>`).join('')}</select>
+<select onchange="H.p=this.value;render()"><option value="">Todas plataformas</option><option value="ifood" ${H.p=='ifood'?'selected':''}>iFood</option><option value="anota" ${H.p=='anota'?'selected':''}>Anota AI</option></select>
+<input type="date" value="${H.a}" onchange="H.a=this.value;render()"><input type="date" value="${H.b}" onchange="H.b=this.value;render()"></div></div>
+<p class="tot">${st.n} entregas · ${brl(st.t)}</p><div class="card">${ds.map(d=>`<div class="row"><div><b>${brl(d.fee)}</b> · ${PL[d.plat]}${d.order?' · #'+esc(d.order):''}<div class="mu">${esc(cou(d.cid).name)} (${esc(cou(d.cid).ini)}) · ${dt(d.ts)}</div></div><div class="noprint" style="display:flex;gap:6px"><button class="sm" onclick="editDel('${d.id}')">✎</button><button class="sm" onclick="delDel('${d.id}')">🗑</button></div></div>`).join('')||'<p class="mu">Nenhuma entrega encontrada.</p>'}</div>`},
+close(){const s=cur(),past=S.shifts.filter(x=>x.close).sort((a,b)=>b.close-a.close);
+return `<h1>Fechamento</h1>${s?`<div class="card"><b>Expediente atual</b> <span class="mu">desde ${dt(s.open)}</span>${reportHTML(s.id)}<button class="noprint" style="width:100%;margin-top:10px" onclick="share('${s.id}')">Compartilhar / Imprimir</button><button class="p big noprint" style="min-height:56px;margin-top:10px;font-size:17px" onclick="closeShift()">ENCERRAR EXPEDIENTE</button></div>`:`<div class="card"><p>Nenhum expediente aberto.</p><button class="p big" onclick="openShift()">ABRIR EXPEDIENTE</button></div>`}
+<h2>Fechamentos anteriores</h2><div class="card">${past.map(x=>`<div class="row" onclick="go('rep','${x.id}')" style="cursor:pointer"><span>${dt(x.open)} → ${hm(x.close)}</span><span class="tot">${brl(stats(sd(x.id)).t)} ›</span></div>`).join('')||'<p class="mu">Nenhum ainda.</p>'}</div>`},
+rep(){const x=S.shifts.find(s=>s.id==P);return `<button class="sm noprint" onclick="go('close')">← Voltar</button><h1 style="margin-top:10px">Fechamento</h1><div class="card"><b>${dt(x.open)}</b> <span class="mu">${x.close?'até '+hm(x.close):'em aberto'}</span>${reportHTML(x.id)}<button class="noprint" style="width:100%;margin-top:10px" onclick="share('${x.id}')">Compartilhar / Imprimir</button></div>`},
+team(){const e=P?cou(P):null;return `<h1>Entregadores</h1><div class="card"><label>Nome ou identificação</label><input id="cn" placeholder="Ex.: João"><label>Iniciais (as da nota)</label><input id="ci" maxlength="4" placeholder="Ex.: JS"><div class="grid g2" style="margin-top:12px">${P?'<button onclick="P=null;render()">Cancelar</button>':'<span></span>'}<button class="p" onclick="addCou()">${P?'Salvar':'Adicionar'}</button></div></div>
+<div class="card">${S.couriers.map(c=>`<div class="row ${c.active?'':'off'}"><span><b>${esc(c.name)}</b> <span class="mu">(${esc(c.ini)})${c.active?'':' · inativo'}</span></span><span style="display:flex;gap:6px"><button class="sm" onclick="editCou('${c.id}')">Editar</button><button class="sm" onclick="togCou('${c.id}')">${c.active?'Desativar':'Ativar'}</button></span></div>`).join('')||'<p class="mu">Nenhum entregador cadastrado.</p>'}</div><p class="mu">Entregadores desativados continuam aparecendo nos históricos e fechamentos.</p>`}};
+const TAB={home:'home',reg:'home',hist:'hist',close:'close',rep:'close',team:'team'};
+function render(){$('app').innerHTML=views[V]();document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v==TAB[V]))}
+render();
+</script>
+</body>
+</html>
