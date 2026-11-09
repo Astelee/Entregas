@@ -57,6 +57,11 @@ nav button.on{color:var(--pr);font-weight:700}nav button.on svg{filter:drop-shad
 #sp i{width:140px;height:3px;background:#222;border-radius:2px;overflow:hidden;position:relative}
 #sp i:after{content:'';position:absolute;inset:0;background:var(--grad);transform-origin:left;animation:fill 1.1s ease-in-out forwards}
 @keyframes fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.hero{background:var(--grad);border-radius:16px;padding:16px;margin:10px 0 4px;color:#fff;box-shadow:0 6px 24px #FF6B0044}.hero small{display:block;font-size:13px;opacity:.9}.hero b{display:block;font-size:34px;line-height:1.2}.hero span{font-size:13px}
+h3{font-size:14px;color:var(--mu);margin:18px 0 4px;font-weight:600}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.tag{font-size:12px;background:var(--el);border:1px solid var(--bd);border-radius:20px;padding:2px 8px;color:var(--mu)}
+.pay{border-bottom:1px solid var(--bd);padding-bottom:10px;margin-bottom:4px}.rt{text-align:right}.amt{font-size:22px}.paybtn{width:100%}
+.pay.paid .amt{color:var(--ok)}.pay.paid button.sel{border-color:var(--ok);background:#0d2418;box-shadow:none;color:var(--ok)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#okv circle,#okv path{stroke-dashoffset:0!important}}
 @media print{nav,.noprint,#toast{display:none!important}body{background:#fff;color:#000}}
 </style>
@@ -85,15 +90,19 @@ function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';cle
 function ask(q,fn){$('mq').textContent=q;mfn=fn;$('modal').style.display='flex'}
 function mc(y){$('modal').style.display='none';if(y&&mfn)mfn()}
 function go(v,p){V=v;P=p||null;render();scrollTo(0,0);const a=$('app');a.classList.remove('in');void a.offsetWidth;a.classList.add('in')}
-function stats(ds){const by={};let n=0,t=0,i=0,a=0;ds.forEach(d=>{const b=by[d.cid]=by[d.cid]||{n:0,t:0,i:0,a:0};b.n++;b.t+=d.fee;n++;t+=d.fee;if(d.plat=='ifood'){b.i+=d.fee;i+=d.fee}else{b.a+=d.fee;a+=d.fee}});return{by,n,t,i,a}}
+function stats(ds){const by={};let n=0,t=0,i=0,a=0,ni=0,na=0;ds.forEach(d=>{const b=by[d.cid]=by[d.cid]||{n:0,t:0,i:0,a:0,ci:0,ca:0};b.n++;b.t+=d.fee;n++;t+=d.fee;if(d.plat=='ifood'){b.i+=d.fee;b.ci++;i+=d.fee;ni++}else{b.a+=d.fee;b.ca++;a+=d.fee;na++}});return{by,n,t,i,a,ni,na}}
 const sd=sid=>S.deliveries.filter(d=>d.sid==sid);
-function reportHTML(sid){const s=stats(sd(sid));const ids=Object.keys(s.by);
-return (ids.length?ids.map(id=>{const b=s.by[id],c=cou(id);return `<div class="row"><div class="who">${av(id)}<div><b>${esc(c.name)}</b> <span class="mu">(${esc(c.ini)})</span><div class="mu">iFood ${brl(b.i)} · Anota AI ${brl(b.a)}</div></div></div><div style="text-align:right"><b>${brl(b.t)}</b><div class="mu">${b.n} entrega${b.n==1?'':'s'}</div></div></div>`}).join(''):'<p class="mu">Nenhuma entrega neste expediente.</p>')+
-`<div class="row tot"><span>TOTAL GERAL</span><span>${s.n} entregas · ${brl(s.t)}</span></div><div class="row"><span>iFood</span><span>${brl(s.i)}</span></div><div class="row"><span>Anota AI</span><span>${brl(s.a)}</span></div>`}
-function reportText(sid){const sh=S.shifts.find(x=>x.id==sid),s=stats(sd(sid));
-let t=`FECHAMENTO — ${dt(sh.open)}${sh.close?' a '+hm(sh.close):' (em aberto)'}\n\n`;
-Object.keys(s.by).forEach(id=>{const b=s.by[id],c=cou(id);t+=`${c.name.toUpperCase()} (${c.ini})\n${b.n} entregas — ${brl(b.t)}\n(iFood ${brl(b.i)} / Anota AI ${brl(b.a)})\n\n`});
-return t+`TOTAL GERAL\n${s.n} entregas — ${brl(s.t)}\niFood: ${brl(s.i)}\nAnota AI: ${brl(s.a)}`}
+const pl=(n,s,p)=>n+' '+(n==1?s:p);
+function reportHTML(sid){const sh=S.shifts.find(x=>x.id==sid),s=stats(sd(sid)),pd=sh.paid||{},ids=Object.keys(s.by);let paid=0;ids.forEach(id=>{if(pd[id])paid+=s.by[id].t});
+const tag=(l,c,v)=>c?'<span class="tag">'+l+' · '+c+' · '+brl(v)+'</span>':'';
+return '<div class="hero"><small>A pagar aos entregadores</small><b>'+brl(s.t)+'</b><span>'+pl(s.n,'entrega','entregas')+(s.t?' · pago '+brl(paid)+' de '+brl(s.t):'')+'</span></div><h3>Quanto cada entregador recebe</h3>'+
+(ids.length?ids.map(id=>{const b=s.by[id],c=cou(id),ok=pd[id];return '<div class="pay '+(ok?'paid':'')+'"><div class="row" style="border:0;padding-bottom:6px"><div class="who">'+av(id)+'<div><b>'+esc(c.name)+'</b> <span class="mu">('+esc(c.ini)+')</span><div class="tags">'+tag('iFood',b.ci,b.i)+tag('Anota AI',b.ca,b.a)+'</div></div></div><div class="rt"><b class="amt">'+brl(b.t)+'</b><div class="mu">'+pl(b.n,'entrega','entregas')+'</div></div></div><button class="sm paybtn noprint '+(ok?'sel':'')+'" onclick="togPay(\''+sid+'\',\''+id+'\')">'+(ok?'✓ Pago':'Marcar como pago')+'</button></div>'}).join(''):'<p class="mu">Nenhuma entrega neste expediente.</p>')+
+'<h3>De onde vieram as taxas</h3><div class="row"><span>iFood <span class="mu">· '+pl(s.ni,'entrega','entregas')+'</span></span><b>'+brl(s.i)+'</b></div><div class="row"><span>Anota AI <span class="mu">· '+pl(s.na,'entrega','entregas')+'</span></span><b>'+brl(s.a)+'</b></div><p class="mu" style="margin:6px 0 0">iFood + Anota AI = '+brl(s.t)+'</p>'}
+function togPay(sid,cid){const sh=S.shifts.find(x=>x.id==sid);sh.paid=sh.paid||{};sh.paid[cid]=!sh.paid[cid];save();render()}
+function reportText(sid){const sh=S.shifts.find(x=>x.id==sid),s=stats(sd(sid)),pd=sh.paid||{};
+let t='FECHAMENTO — Nossa Pizza\n'+dt(sh.open)+(sh.close?' a '+hm(sh.close):' (em aberto)')+'\n\nA PAGAR AOS ENTREGADORES: '+brl(s.t)+'\n'+pl(s.n,'entrega','entregas')+'\n\nQUANTO CADA UM RECEBE\n';
+Object.keys(s.by).forEach(id=>{const b=s.by[id],c=cou(id);t+='\n'+c.name.toUpperCase()+' ('+c.ini+') — '+brl(b.t)+(pd[id]?' ✓ PAGO':'')+'\n'+pl(b.n,'entrega','entregas')+(b.ci?'\n  iFood: '+b.ci+' · '+brl(b.i):'')+(b.ca?'\n  Anota AI: '+b.ca+' · '+brl(b.a):'')+'\n'});
+return t+'\nDE ONDE VIERAM AS TAXAS\niFood: '+pl(s.ni,'entrega','entregas')+' · '+brl(s.i)+'\nAnota AI: '+pl(s.na,'entrega','entregas')+' · '+brl(s.a)+'\nTotal: '+brl(s.t)}
 async function share(sid){const t=reportText(sid);if(window.Android){Android.share(t);return}try{if(navigator.share){await navigator.share({text:t});return}}catch(e){if(e.name=='AbortError')return}
 try{await navigator.clipboard.writeText(t);toast('Copiado!')}catch(e){prompt('Copie o texto:',t)}}
 function openShift(){S.shifts.push({id:uid(),open:Date.now(),close:null});save();render();toast('Expediente aberto')}
