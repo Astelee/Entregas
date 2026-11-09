@@ -98,15 +98,22 @@ async function share(sid){const t=reportText(sid);if(window.Android){Android.sha
 try{await navigator.clipboard.writeText(t);toast('Copiado!')}catch(e){prompt('Copie o texto:',t)}}
 function openShift(){S.shifts.push({id:uid(),open:Date.now(),close:null});save();render();toast('Expediente aberto')}
 function closeShift(){const s=cur();ask('Encerrar o expediente? Os dados serão preservados e novas entregas iniciarão um novo expediente.',()=>{s.close=Date.now();save();go('rep',s.id)})}
-function pick(id){F.cid=id;render()}function plat(p){F.plat=p;render()}
-function newDel(){F={order:'',fee:'',cid:null,plat:F.plat,edit:null};go('reg')}
-function saveDel(){if(busy)return;const fee=cents(F.fee);
+function pick(id){F.cid=id;render()}function nextAnota(){const s=cur();if(!s)return '';const n=S.deliveries.filter(d=>d.sid==s.id&&d.plat=='anota'&&/^\d+$/.test(d.order)).map(d=>+d.order);return n.length?String(Math.max.apply(null,n)+1):'1'}
+function plat(p){F.plat=p;if(!F.edit&&(!F.order||F.auto)){F.order=p=='anota'?nextAnota():'';F.auto=true}render()}
+function newDel(){F={order:F.plat=='anota'?nextAnota():'',auto:true,fee:'',cid:null,plat:F.plat,edit:null};go('reg')}
+function saveDel(){if(busy)return;if(cents(F.fee)<=0)return toast('Informe a taxa');if(!F.cid)return toast('Escolha o entregador');
+if(!F.order.trim()){toast('Informe o número do pedido');const q=$('ord');q&&q.focus();return}
+if(F.plat=='ifood'&&F.order.trim().length!=4){toast('Pedido iFood tem 4 números');const q=$('ord');q&&q.focus();return}
+const o=F.order.trim(),sid=F.edit?S.deliveries.find(x=>x.id==F.edit).sid:(cur()||{}).id;
+if(o&&S.deliveries.some(d=>d.sid==sid&&d.plat==F.plat&&d.order==o&&d.id!=F.edit))return ask('O pedido '+o+' ('+PL[F.plat]+') já foi registrado neste expediente. Registrar mesmo assim?',commitDel);
+commitDel()}
+function commitDel(){if(busy)return;const fee=cents(F.fee);
 if(fee<=0)return toast('Informe a taxa');if(!F.cid)return toast('Escolha o entregador');
 busy=true;setTimeout(()=>busy=false,600);
 if(F.edit){const d=S.deliveries.find(x=>x.id==F.edit);Object.assign(d,{order:F.order.trim(),fee,cid:F.cid,plat:F.plat});save();toast('Registro corrigido');F.edit=null;go('hist');return}
 const s=cur();if(!s)return toast('Abra um expediente');
 S.deliveries.push({id:uid(),sid:s.id,order:F.order.trim(),fee,cid:F.cid,plat:F.plat,ts:Date.now()});save();
-F.order='';F.fee='';F.cid=null;render();okAnim();setTimeout(()=>{const f=$('fee');f&&f.focus()},50)}
+F.order=F.plat=='anota'?nextAnota():'';F.auto=true;F.fee='';F.cid=null;render();okAnim();setTimeout(()=>{const f=$('fee');f&&f.focus()},50)}
 function editDel(id){const d=S.deliveries.find(x=>x.id==id);F={order:d.order,fee:(d.fee/100).toFixed(2).replace('.',','),cid:d.cid,plat:d.plat,edit:id};go('reg')}
 function delDel(id){ask('Excluir esta entrega?',()=>{S.deliveries=S.deliveries.filter(x=>x.id!=id);save();render();toast('Excluída')})}
 function addCou(){const n=$('cn').value.trim(),i=$('ci').value.trim().toUpperCase();if(!n||!i)return toast('Informe nome e iniciais');
@@ -127,7 +134,7 @@ return `<button class="sm" onclick="var h=F.edit;F.edit=null;go(h?'hist':'home')
 <label>Taxa de entrega (R$)</label><div class="feewrap"><input id="fee" class="fee" inputmode="numeric" placeholder="0,00" value="${esc(F.fee)}" oninput="maskFee(this)"></div>
 <label>Plataforma</label><div class="grid g2"><button class="${F.plat=='ifood'?'sel':''}" onclick="plat('ifood')">iFood</button><button class="${F.plat=='anota'?'sel':''}" onclick="plat('anota')">Anota AI</button></div>
 <label>Entregador</label><div class="grid g2">${list.map(c=>`<button class="c ${F.cid==c.id?'sel':''}" onclick="pick('${c.id}')">${av(c.id)}<span>${esc(c.name)}<small>${esc(c.ini)}</small></span></button>`).join('')||'<p class="mu">Cadastre entregadores na aba Equipe.</p>'}</div>
-<label>Nº do pedido (opcional)</label><input value="${esc(F.order)}" oninput="F.order=this.value">
+<label>${F.plat=='anota'?'Nº do pedido Anota AI (sequência, já sugerido)':'Nº do pedido iFood (4 números)'}</label><input id="ord" inputmode="numeric" maxlength="${F.plat=='anota'?5:4}" value="${esc(F.order)}" oninput="F.order=this.value=this.value.replace(/\D/g,'');F.auto=false">
 <p class="mu">${F.edit?'Data e hora originais mantidas.':'Data e hora: automáticas ao salvar.'}</p>
 <button class="ok" onclick="saveDel()">${F.edit?'SALVAR CORREÇÃO':'CONFIRMAR'}</button>`},
 hist(){let ds=S.deliveries.slice().sort((a,b)=>b.ts-a.ts);
